@@ -1,0 +1,84 @@
+# Local stack for the whole pipeline. `docker compose up -d`
+# This is Milestone 0 — get all of these healthy before writing any code.
+#
+# If a service won't start, that's normal the first time. Read its logs:
+#   docker compose logs -f <service>
+# Kafka in KRaft mode (no Zookeeper) can be fussy about CLUSTER_ID / listeners —
+# that's the usual first-day fight. Learn: "kafka kraft single node docker".
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:8.2.2
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qg"   # your fixed literal — set a real one
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:8.2.2
+    container_name: schema-registry
+    depends_on: [kafka]
+    ports:
+      - "8081:8081"    # your producer registers/looks up schemas here
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.6
+    container_name: clickhouse
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    ports:
+      - "8123:8123"    # HTTP interface (Grafana connects here)
+      - "9000:9000"    # native protocol
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+    # To auto-run your SQL on first boot, mount the files:
+    # volumes:
+    #   - ./clickhouse:/docker-entrypoint-initdb.d
+
+  grafana:
+    image: grafana/grafana:13.0
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on: [clickhouse]
+    ports:
+      - "3000:3000"    # open http://localhost:3000 (admin/admin)
+    environment:
+      # lets Grafana install the official ClickHouse datasource plugin on boot
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on: [kafka, schema-registry]
+    ports:
+      - "8080:8080"    # open http://localhost:8080 to SEE your topics/messages
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+      DYNAMIC_CONFIG_ENABLED: "true"
+
+volumes:
+  kafka-data:
+  clickhouse-data:
+  grafana-data:
+
