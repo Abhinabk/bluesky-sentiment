@@ -22,8 +22,6 @@ async def get_feed():
                 pprint(data)
         except websockets.ConnectionClosed as e:
             logger.warning("Connection closed: %s",e)
-        except websockets.exceptions as e:
-            logger.warning("Connection Error %s",e)
         except Exception as e:
             logger.warning("Error %s",e)
 
