@@ -1,4 +1,4 @@
-from confluent_kafka import KafkaException
+from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka.admin import AdminClient, NewTopic, NewPartitions  # pyright: ignore[reportPrivateImportUsage]
 import logging
 
@@ -76,8 +76,13 @@ class KafkaAdmin:
                 logger.info(f"Topic {topic} created successfully")
                 results[topic] = True
             except KafkaException as e:
-                logger.error(f"Failed to create topic {topic}: {e}")
-                results[topic] = False
+                error = e.args[0]
+                if error.code() ==  KafkaError.TOPIC_ALREADY_EXISTS:
+                    logger.info(f"Topic {topic} already exists, skipping")
+                    results[topic] = True
+                else:
+                    logger.error(f"Failed to create topic {topic}: {e}")
+                    results[topic] = False
         return results
 
     def add_partitions_to_topic(
