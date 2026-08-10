@@ -9,3 +9,4 @@
 # Create the Schema Registry 
 - the producer encodes the key/values using th uuid generated form the Schema Registry
 - the consumer/processor can decode the key/value by referring the uuid with corresponding schema
+- missing modules need to be added [SchemaRegistry,FastAvro] 
