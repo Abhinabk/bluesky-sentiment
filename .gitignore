@@ -1,0 +1,29 @@
+# ---- Secrets / env ----
+.env
+.env.*
+!.env.example
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ---- Java / Maven (processing/) ----
+processing/target/
+*.class
+*.jar
+!**/mvnw
+.mvn/
+
+# ---- IDE (JetBrains: PyCharm + IntelliJ) ----
+.idea/
+*.iml
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
