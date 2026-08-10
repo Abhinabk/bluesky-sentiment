@@ -32,7 +32,7 @@
       "name": "langs",
       "type": ["null",{"type": "array","items": "string"}],
       "default": null,
-      "doc": "The language of the text can be null/not present"
+      "doc": "The language of the text can be null/not present its a hint values can mismatch"
     }
   ]
 }

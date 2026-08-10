@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/.venv/lib/python3.14/site-packages" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="uv WSL (Ubuntu): (/home/abhi/programming/java/bluesky-sentiment/.venv/bin/python3.14) (2)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="uv WSL (Ubuntu): (/home/abhi/programming/java/bluesky-sentiment/.venv/bin/python3.14)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
