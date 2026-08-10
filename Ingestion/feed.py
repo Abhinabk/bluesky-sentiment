@@ -19,17 +19,22 @@ async def get_feed():
         try:
             async for events in websocket:
                 data = json.loads(events)
-                pprint(data)
+                # filter for kind == commit (account event type don't have operation)
+                if(data.get("kind")=="commit"
+                    and data.get("commit",{}).get("operation") == "create"
+                    and data.get("commit",{}).get("record") is not None):
+                    yield  data
         except websockets.ConnectionClosed as e:
             logger.warning("Connection closed: %s",e)
         except Exception as e:
             logger.warning("Error %s",e)
 
-def main():
-    asyncio.run(get_feed())
+async def main():
+    async for i in get_feed():
+        pprint(i)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
 
 
 
