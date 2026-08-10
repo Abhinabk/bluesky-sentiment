@@ -21,11 +21,11 @@
     {
       "name": "time_us",
       "type": "long",
-      "doc": "When Bluesky saw the post/ send th epost to firehose"
+      "doc": "When jetstream saw the post"
     },
     {
       "name": "text",
-      "type": ["string"],
+      "type": "string",
       "doc": "Raw text payload (this is what to run the sentiment analysis on, careful can be empty or not in english )"
     },
     {

@@ -54,7 +54,7 @@ class KafkaProducer:
                 f"Partition={msg.partition()} offset={msg.offset()}",
             )
 
-    def produce_msg(self, topic: str, value: bytes, key: bytes|None) -> None:
+    def produce_msg(self, topic: str, value: object, key: object|None) -> None:
         record_key = key
         record_value = value
 
@@ -77,7 +77,8 @@ class KafkaProducer:
             self.producer.poll(0)
 
         except BufferError:
-            # subtle bug here it polls once for (0.5s) then moves on what is buffer still not empty?
+            #TODO subtle bug here it polls once for (0.5s) then moves on what is buffer still not empty?
+
             logger.warning("Local buffer is full, poll briefly and retry.")
             self.producer.poll(0.5)
             self.producer.produce(
