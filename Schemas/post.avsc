@@ -1,0 +1,38 @@
+{
+  "type": "record",
+  "name": "Post",
+  "namespace": "com.abhinab.bluesky",
+  "fields": [
+    {
+      "name": "did",
+      "type": "string",
+      "doc": "Uniquely ids a user account"
+    },
+    {
+      "name": "rkey",
+      "type": "string",
+      "doc": "References an individual record within the same collection (e.g in post,delete,like collections)"
+    },
+    {
+      "name": "createdAt",
+      "type": "string",
+      "doc": "when the post was created"
+    },
+    {
+      "name": "time_us",
+      "type": "long",
+      "doc": "When Bluesky saw the post/ send th epost to firehose"
+    },
+    {
+      "name": "text",
+      "type": ["string"],
+      "doc": "Raw text payload (this is what to run the sentiment analysis on, careful can be empty or not in english )"
+    },
+    {
+      "name": "langs",
+      "type": ["null",{"type": "array","items": "string"}],
+      "default": null,
+      "doc": "The language of the text can be null/not present"
+    }
+  ]
+}
