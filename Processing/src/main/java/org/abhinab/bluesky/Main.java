@@ -1,5 +1,7 @@
 package org.abhinab.bluesky;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serdes;
@@ -8,6 +10,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.List;
 import java.util.Map;
@@ -48,9 +51,8 @@ public class Main {
                     String text = raw.toString().toLowerCase();
                     return  brands.stream().anyMatch(brand->text.contains(brand));
                 })
-                .peek((key, value) -> {
-                    System.out.println(value.get("text"));
-                });
+                .mapValues(value -> JsonMapper.recordToJson(value))
+                .to("posts.enriched", Produced.with(Serdes.String(),Serdes.String()));
 
 
         //create the kafak stream instance
@@ -73,4 +75,15 @@ public class Main {
     }
 }
 
-
+class JsonMapper{
+    private static final ObjectMapper mapper = new ObjectMapper();
+    public  static String recordToJson(GenericRecord record){
+        ObjectNode node = mapper.createObjectNode();
+        node.put("text",record.get("text").toString());
+        node.put("did",record.get("did").toString());
+        node.put("rkey",record.get("rkey").toString());
+        node.put("createdAt",record.get("createdAt").toString());
+        node.put("time_us",(Long) record.get("time_us"));
+        return  node.toString();
+    }
+}

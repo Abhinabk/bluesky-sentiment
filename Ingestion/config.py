@@ -1,3 +1,3 @@
 BOOTSTRAP_SERVERS=["localhost:9092"]
-RAW_TOPIC=["posts.raw"]
+TOPICS=["posts.raw","posts.enriched"]
 SCHEMA_REGISTRY_URL=["http://localhost:8081"]

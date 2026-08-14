@@ -5,7 +5,7 @@ from Ingestion.KafkaWrappers.ProducerWrapper import KafkaProducer
 from confluent_kafka.schema_registry.avro import AvroSerializer
 from Ingestion.config import SCHEMA_REGISTRY_URL
 from Ingestion.feed import get_feed
-from Ingestion.config import BOOTSTRAP_SERVERS, RAW_TOPIC
+from Ingestion.config import BOOTSTRAP_SERVERS, TOPICS
 import logging
 import asyncio
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # create the topic
 admin = KafkaAdmin(BOOTSTRAP_SERVERS)
-admin.create_topics(RAW_TOPIC)
+admin.create_topics(TOPICS)
 
 
 
@@ -56,7 +56,7 @@ async def produce(producer: KafkaProducer):
     try:
         async for item in get_feed():
             item = flat_events(item)
-            producer.produce_msg(topic=RAW_TOPIC[0], value=item, key=None)
+            producer.produce_msg(topic=TOPICS[0], value=item, key=None)
     finally:
         producer.flush()
 
