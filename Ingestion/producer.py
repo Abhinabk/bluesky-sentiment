@@ -5,7 +5,7 @@ from Ingestion.KafkaWrappers.ProducerWrapper import KafkaProducer
 from confluent_kafka.schema_registry.avro import AvroSerializer
 from Ingestion.config import SCHEMA_REGISTRY_URL
 from Ingestion.feed import get_feed
-from config import BOOTSTRAP_SERVERS, RAW_TOPIC
+from Ingestion.config import BOOTSTRAP_SERVERS, RAW_TOPIC
 import logging
 import asyncio
 

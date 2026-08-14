@@ -22,5 +22,8 @@ will change `ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest"` to latest
 > In previous `post.raw` I was working with JSON after which without deleting the \
 > topic I started to work with avro format which caused `Unknown magic byte!` error \
 > in consumer side which could only fix form the producer side (deleting the topic and 
-> re-building the messages)
+> re-building the messages) 
+
+- With filter we cannot map GenericRecord to toLowerString as we loose info have to keep it
+    generic Record for the sentiment analysis to work as we loose other metadata info
 
