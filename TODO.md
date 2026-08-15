@@ -27,3 +27,8 @@ will change `ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest"` to latest
 - With filter we cannot map GenericRecord to toLowerString as we loose info have to keep it
     generic Record for the sentiment analysis to work as we loose other metadata info
 
+# Create the python Sentiment analysis
+- Python consumer subscribes to posts.enriched the filtered posts gives each post a score and saves that to 
+post.scored which can be pulled by clickhouse
+> truncation=True tells the pipeline: if the text is too long, cut it off at 512 tokens and score what fits,\
+> rather than erroring (should be fine as sentiment of a post is generally set early)

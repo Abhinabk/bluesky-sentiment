@@ -77,7 +77,7 @@ class KafkaProducer:
             self.producer.poll(0)
 
         except BufferError:
-            #TODO subtle bug here it polls once for (0.5s) then moves on what is buffer still not empty?
+            #TODO subtle bug here it polls once for (0.5s) then moves on what if buffer still not empty?
 
             logger.warning("Local buffer is full, poll briefly and retry.")
             self.producer.poll(0.5)
