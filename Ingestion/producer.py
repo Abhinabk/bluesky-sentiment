@@ -1,11 +1,11 @@
 import pathlib
 
-from Ingestion.KafkaWrappers.AdminWrapper import KafkaAdmin
-from Ingestion.KafkaWrappers.ProducerWrapper import KafkaProducer
+from KafkaWrappers.AdminWrapper import KafkaAdmin
+from KafkaWrappers.ProducerWrapper import KafkaProducer
 from confluent_kafka.schema_registry.avro import AvroSerializer
-from Ingestion.config import SCHEMA_REGISTRY_URL
+from config import SCHEMA_REGISTRY_URL
 from Ingestion.feed import get_feed
-from Ingestion.config import BOOTSTRAP_SERVERS, TOPICS
+from config import BOOTSTRAP_SERVERS, TOPICS
 import logging
 import asyncio
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # create the topic
 admin = KafkaAdmin(BOOTSTRAP_SERVERS)
-admin.create_topics(TOPICS)
+admin.create_topics(list(TOPICS))
 
 
 
