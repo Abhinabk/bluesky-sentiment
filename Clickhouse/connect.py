@@ -10,9 +10,12 @@ config = {
 }
 base_path = pathlib.Path("Clickhouse/sql")
 file_path = {
-    "create_database": base_path/"create_database.sql"
+    "create_database": base_path/"create_database.sql",
+    "create_table": base_path/"create_table.sql",
+    "create_kafka_table": base_path/"create_kafka_table.sql",
+    "materialized": base_path/"mv_insert.sql"
     }
 with clickhouse_connect.get_client(**config) as client:
-    create_dabtabase = file_path["create_database"].read_text(encoding="utf-8")
-    client.command(create_dabtabase)
-
+    for name,path in file_path.items():
+        print(f"Applying {path.name}")
+        client.command(path.read_text())

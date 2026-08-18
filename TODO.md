@@ -52,4 +52,9 @@ post.scored which can be pulled by clickhouse
 
 > the dict maintains the order of keys so using that to run commands in order
 
-> forgot to the the brand upstream in processing so have to add that back
+> forgot to the the brand upstream in processing so have to add that back 
+
+- the kafak_table in clickhouse is a transient read buffer thata dont store anything
+  data streams throught it and its gome (just a normal consumer) 
+- we use the MATERIALIZED VIEW its a trigger that does a merge op to the
+  permanent table created
