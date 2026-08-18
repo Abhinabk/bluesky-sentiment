@@ -26,9 +26,30 @@ will change `ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"earliest"` to latest
 
 - With filter we cannot map GenericRecord to toLowerString as we loose info have to keep it
     generic Record for the sentiment analysis to work as we loose other metadata info
+- fix 
+  - anymatch return boolean so trwos awy the brands names so cant have filet before saving the brand name
+  - shifted the filter logig during json cretion return null if no filter match which is later thrown 
+    away by using a filter in  stream. Now the brand name survives 
 
+- wile junnning the java code the env need tho have the matching java version if multiple java version present 
+- .contains() bug its a substring match so disadvantage will amtch with sad. Fine for v1
+- the projhect use java 21
+ 
 # Create the python Sentiment analysis
 - Python consumer subscribes to posts.enriched the filtered posts gives each post a score and saves that to 
 post.scored which can be pulled by clickhouse
 > truncation=True tells the pipeline: if the text is too long, cut it off at 512 tokens and score what fits,\
 > rather than erroring (should be fine as sentiment of a post is generally set early)
+
+# Build the ClickHouse database 
+- clickhouse connects to the kafak topic which becomes teh source for it table rows 
+
+> using full database in sql file name and as cant use use command
+> for that we have to cange the databse in config file and for the 
+> config file to work the databse has to exist before 
+> one way would be to create the databse before that would require using 
+> docker commnd (didnt want to use that)
+
+> the dict maintains the order of keys so using that to run commands in order
+
+> forgot to the the brand upstream in processing so have to add that back
