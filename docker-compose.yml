@@ -71,6 +71,8 @@ services:
     environment:
       # lets Grafana install the official ClickHouse datasource plugin on boot
       GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest

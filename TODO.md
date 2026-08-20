@@ -58,3 +58,9 @@ post.scored which can be pulled by clickhouse
   data streams throught it and its gome (just a normal consumer) 
 - we use the MATERIALIZED VIEW its a trigger that does a merge op to the
   permanent table created
+
+# Create a makefile to run all the commands seamlesslyly 
+- uses tmux to spawn own session as each files are blocking 
+- have to attacht to session at end and uses -d in beggion if no -d then tmux takes mver 
+  the session and make will not have access to the tmux session 
+- using exec zsh, if a make comamnd crashes without it the pane dies
