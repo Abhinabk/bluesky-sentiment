@@ -12,10 +12,12 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+import java.util.regex.Pattern;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 
@@ -23,7 +25,8 @@ public class Main {
     public static void main(String[] args) {
 
         List<String> brands = List.of("love", "sad", "good", "happy", "angry");
-        // configure property
+        var pattern = Main.getRegexPattern(brands);
+       // configure property
         Properties streamProps = new Properties();
         streamProps.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "bluesky-processing-v1");
         streamProps.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -56,7 +59,7 @@ public class Main {
          * .mapValues(value -> JsonMapper.recordToJson(value))
          * .to("posts.enriched", Produced.with(Serdes.String(),Serdes.String()));
          */
-        stream.mapValues(record -> JsonMapper.recordToJson(record, brands))
+        stream.mapValues(record -> JsonMapper.recordToJson(record,pattern))
                 .filter((key, value) -> value != null)
                 .to("posts.enriched", Produced.with(Serdes.String(), Serdes.String()));
 
@@ -78,26 +81,43 @@ public class Main {
             Thread.currentThread().interrupt();
         }
     }
+
+    static Map<String,Pattern> getRegexPattern(List<String> brands){
+
+        Map<String,Pattern> COMPILED_PATTERN = new HashMap<String,Pattern>();   
+            for(var brand : brands){
+                
+                String regex = "\\b"+ Pattern.quote(brand) + "\\b";
+                Pattern pattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
+                COMPILED_PATTERN.put(brand, pattern);
+            } 
+        return COMPILED_PATTERN;     
+    }
 }
 
 class JsonMapper {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    
 
-    public static String recordToJson(GenericRecord record, List<String> brands) {
+    public static String recordToJson(GenericRecord record,Map<String,Pattern> pattern) {
         /*
          * finds which brands matched
          * builds the json with added brand that survived
          * return the json string iof matched null if no match
          */
+       
         // fetch the text where brands might be
-        String text = record.get("text").toString().toLowerCase();
-        String matched = brands.stream().filter(x -> text.contains(x)).findFirst().orElse(null);
+        String text = record.get("text").toString();
+        String matched = pattern.keySet().stream()
+            .filter(x -> pattern.get(x).matcher(text).find())
+            .findFirst().orElse(null);
+
         if (matched == null) {
             return null;
         } else {
-            ObjectNode node = mapper.createObjectNode();
+            ObjectNode node = MAPPER.createObjectNode();
             node.put("brand", matched);
-            node.put("text", record.get("text").toString());
+            node.put("text", text);
             node.put("did", record.get("did").toString());
             node.put("rkey", record.get("rkey").toString());
             node.put("createdAt", record.get("createdAt").toString());

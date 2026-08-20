@@ -19,4 +19,4 @@ sentiment:
 	uv run -m Sentiment.SentimentConsumer
 
 all:
-	chmod +x runmake.sh && ./runmake.sh
+	chmod +x runmake.sh && docker compose up -d && ./runmake.sh

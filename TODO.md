@@ -64,3 +64,10 @@ post.scored which can be pulled by clickhouse
 - have to attacht to session at end and uses -d in beggion if no -d then tmux takes mver 
   the session and make will not have access to the tmux session 
 - using exec zsh, if a make comamnd crashes without it the pane dies
+  
+# Fix substring match insed of word match 
+- currently uing contains that will match a substring insed of the correct word so 
+  switching to regex with word boundary for exact match
+  still will match apple in "apple pie" its a natual language ambiguity probalem not really fixable 
+  
+> filter rturn a Stream<String> not a terminating op need findfirst and orelese to return String
