@@ -71,3 +71,7 @@ post.scored which can be pulled by clickhouse
   still will match apple in "apple pie" its a natual language ambiguity probalem not really fixable 
   
 > filter rturn a Stream<String> not a terminating op need findfirst and orelese to return String
+
+# Build th globalktable 
+- a `brands.config`a log topic that store the brands
+  its a log comapcted topic with no_of_partitions=1  

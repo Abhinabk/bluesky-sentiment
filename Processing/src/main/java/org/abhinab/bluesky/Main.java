@@ -103,7 +103,7 @@ class JsonMapper {
         /*
          * finds which brands matched
          * builds the json with added brand that survived
-         * return the json string iof matched null if no match
+         * return the json string if matched null if no match
          */
        
         // fetch the text where brands might be

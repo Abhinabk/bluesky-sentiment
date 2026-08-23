@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 # create the topic
 admin = KafkaAdmin(BOOTSTRAP_SERVERS)
-admin.create_topics(list(TOPICS))
+admin.create_topics([TOPICS.raw,TOPICS.enriched,TOPICS.scored])
+admin.create_topics([TOPICS.brands],cleanup_policy="compact")
 
 
 
@@ -56,10 +57,10 @@ async def produce(producer: KafkaProducer):
     try:
         async for item in get_feed():
             item = flat_events(item)
-            producer.produce_msg(topic=TOPICS[0], value=item, key=None)
+            producer.produce_msg(topic=TOPICS.raw, value=item, key=None)
+            logger.info(f"Producing to {TOPICS.raw}")
     finally:
         producer.flush()
-
 
 def main():
     try:

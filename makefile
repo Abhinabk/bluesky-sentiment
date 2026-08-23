@@ -1,11 +1,13 @@
-.PHONY: produce process sentiment up down all
+.PHONY: initialize_brands produce process sentiment up down all
 
 up:
 	docker compose up -d 
 
 down:
 	docker compose down
-
+initialize_brands:
+	@echo "Inintializing brands"
+	uv run -m Ingestion.seed_brands
 produce:
 	@echo "Running Ingestion"
 	uv run -m Ingestion.producer  

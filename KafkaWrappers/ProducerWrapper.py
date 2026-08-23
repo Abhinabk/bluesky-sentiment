@@ -60,6 +60,7 @@ class KafkaProducer:
 
         try:
             if self.key_serializer and key is not None:
+                # expects any that can be called with (value,ctx) value=inte, to encode and ctx=metadata
                 record_key = self.key_serializer(
                     key, SerializationContext(topic, MessageField.KEY)
                 )
