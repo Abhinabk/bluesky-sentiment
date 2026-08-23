@@ -1,31 +1,28 @@
 package org.abhinab.bluesky;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.KeyValueStore;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
-import java.util.regex.Pattern;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 
 public class Main {
     public static void main(String[] args) {
 
-        List<String> brands = List.of("love", "sad", "good", "happy", "angry");
-        var pattern = Main.getRegexPattern(brands);
        // configure property
         Properties streamProps = new Properties();
         streamProps.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "bluesky-processing-v1");
@@ -47,6 +44,16 @@ public class Main {
 
         KStream<String, GenericRecord> stream = builder.stream("posts.raw",
                 Consumed.with(Serdes.String(), valueSerde));
+        // used for state store   
+        GlobalKTable<String,String> globalKTable = builder.globalTable("brands.config",
+            Consumed.with(Serdes.String(),Serdes.String()),
+            Materialized.<String, String, KeyValueStore<Bytes, byte[]>>as("brands-store")
+                .withKeySerde(Serdes.String())
+                .withValueSerde(Serdes.String())
+        );
+        stream.process(BrandFilterProcessor::new).to("posts.enriched",
+            Produced.with(Serdes.String(),Serdes.String())
+        );
         // filter returns a boolean so throws away the brand names
         /*
          * stream.filter(
@@ -59,9 +66,11 @@ public class Main {
          * .mapValues(value -> JsonMapper.recordToJson(value))
          * .to("posts.enriched", Produced.with(Serdes.String(),Serdes.String()));
          */
-        stream.mapValues(record -> JsonMapper.recordToJson(record,pattern))
+        /* stream.mapValues(record -> JsonMapper.recordToJson(record,pattern))
                 .filter((key, value) -> value != null)
-                .to("posts.enriched", Produced.with(Serdes.String(), Serdes.String()));
+                .to("posts.enriched", Produced.with(Serdes.String(), Serdes.String())); */
+        
+        
 
         // create the kafak stream instance
         KafkaStreams kafakaStreams = new KafkaStreams(builder.build(), streamProps);
@@ -82,47 +91,7 @@ public class Main {
         }
     }
 
-    static Map<String,Pattern> getRegexPattern(List<String> brands){
-
-        Map<String,Pattern> COMPILED_PATTERN = new HashMap<String,Pattern>();   
-            for(var brand : brands){
-                
-                String regex = "\\b"+ Pattern.quote(brand) + "\\b";
-                Pattern pattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
-                COMPILED_PATTERN.put(brand, pattern);
-            } 
-        return COMPILED_PATTERN;     
-    }
+   
 }
 
-class JsonMapper {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    
 
-    public static String recordToJson(GenericRecord record,Map<String,Pattern> pattern) {
-        /*
-         * finds which brands matched
-         * builds the json with added brand that survived
-         * return the json string if matched null if no match
-         */
-       
-        // fetch the text where brands might be
-        String text = record.get("text").toString();
-        String matched = pattern.keySet().stream()
-            .filter(x -> pattern.get(x).matcher(text).find())
-            .findFirst().orElse(null);
-
-        if (matched == null) {
-            return null;
-        } else {
-            ObjectNode node = MAPPER.createObjectNode();
-            node.put("brand", matched);
-            node.put("text", text);
-            node.put("did", record.get("did").toString());
-            node.put("rkey", record.get("rkey").toString());
-            node.put("createdAt", record.get("createdAt").toString());
-            node.put("time_us", (Long) record.get("time_us"));
-            return node.toString();
-        }
-    }
-}

@@ -79,7 +79,7 @@ services:
     container_name: kafka-ui
     depends_on: [kafka, schema-registry]
     ports:
-      - "8080:8080"    # open http://localhost:8080 to SEE your topics/messages
+      - "8090:8080"    # open http://localhost:8080 to SEE your topics/messages
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
