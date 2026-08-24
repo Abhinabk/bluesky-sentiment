@@ -125,11 +125,16 @@ exactly-once across the Streams app.
 
 Requires Docker, Java 21 (Temurin), Maven, and [uv](https://docs.astral.sh/uv/). The
 makefile assumes `zsh` + `tmux` for the combined `all` target.
-Pre-req (needs to be tested in real ubuntu instance)
+Pre-req (tested in ubuntu ec2 instance)
+make setup.sh and past the following it that and run bash setup.sh
 ```sh
+#stops on first error
+set -e
+
 #uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
+#make 
+sudo apt install make  
 # Java 21 + Maven
 sudo apt update && sudo apt install -y openjdk-21-jdk maven
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64   # session-only; add to ~/.bashrc to persist
@@ -138,8 +143,8 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64   # session-only; add to ~/.
 sudo apt install -y tmux zsh
 
 # ---- Docker ----
-# remove any old install (harmless if none)
-sudo apt purge -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
+# without or true set e stops the progam if  previosdocker not present
+sudo apt purge -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras || true 
 sudo rm -rf /var/lib/docker /var/lib/containerd
 sudo rm -f /etc/apt/sources.list.d/docker.sources /etc/apt/keyrings/docker.asc
 
@@ -161,11 +166,19 @@ Signed-By: /etc/apt/keyrings/docker.asc
 EOF
 
 sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-pluginr
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+source $HOME/.local/bin/env
 ```
+>  may have to exit and log back in again. Ec2 needs a restart to add docker to groups
+> so that docker commands works without sudo
 
 ```bash
+#0 downloads all python libaries
+uv sync
+
 # 1. bring up the stack (Kafka, Schema Registry, ClickHouse, Grafana, Kafka-UI)
 make up
 

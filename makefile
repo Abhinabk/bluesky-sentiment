@@ -14,7 +14,7 @@ produce:
 
 process:
 	@echo "Running java processor"
-	cd Processing && mvn exec:java 
+	cd Processing && mvn compile exec:java 
 
 sentiment:
 	@echo "Running Sentiment"
