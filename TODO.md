@@ -44,18 +44,18 @@ post.scored which can be pulled by clickhouse
 # Build the ClickHouse database 
 - clickhouse connects to the kafak topic which becomes teh source for it table rows 
 
-> using full database in sql file name and as cant use use command
+> using full database in sql file name and as cant use `use` command
 > for that we have to cange the databse in config file and for the 
 > config file to work the databse has to exist before 
 > one way would be to create the databse before that would require using 
-> docker commnd (didnt want to use that)
+> docker commnd (didnt want to use that) 
 
 > the dict maintains the order of keys so using that to run commands in order
 
-> forgot to the the brand upstream in processing so have to add that back 
+> forgot to add the brand upstream in processing so have to add that back 
 
 - the kafak_table in clickhouse is a transient read buffer thata dont store anything
-  data streams throught it and its gome (just a normal consumer) 
+  data streams throught it and its gone (just a normal consumer) 
 - we use the MATERIALIZED VIEW its a trigger that does a merge op to the
   permanent table created
 
@@ -84,3 +84,4 @@ post.scored which can be pulled by clickhouse
    With the Processor API, you can define arbitrary stream processors that process one received record at a time,
    and connect these processors with their associated state stores to compose the processor topology. 
 - The globalktable ise used as state store by the processor api for filtering
+> `bootstrap` -> bootstrapping refers to the initial loading phase where a state-backed > component—specifically a GlobalKTable—reads and fully populating its local state store > from the underlying Kafka topic before any live stream processing begins

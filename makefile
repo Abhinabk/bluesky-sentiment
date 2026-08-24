@@ -19,6 +19,8 @@ process:
 sentiment:
 	@echo "Running Sentiment"
 	uv run -m Sentiment.SentimentConsumer
-
+clickhouse:
+	#echo "Initializing database"
+	uv run -m Clickhouse.connect
 all:
 	chmod +x runmake.sh && docker compose up -d && ./runmake.sh
