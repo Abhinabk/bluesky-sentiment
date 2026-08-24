@@ -72,7 +72,7 @@ post.scored which can be pulled by clickhouse
   
 > filter rturn a Stream<String> not a terminating op need findfirst and orelese to return String
 
-# Build th globalktable 
+# Build the globalktable 
 - a `brands.config`a log topic that store the brands
   its a log comapcted topic with no_of_partitions=1 
 - we can skip Materialized as and just use consumed with and kstram will autoamtivcally build an internal store 
@@ -83,4 +83,4 @@ post.scored which can be pulled by clickhouse
   > A stream processor is a node in the processor topology that represents a single processing step.
    With the Processor API, you can define arbitrary stream processors that process one received record at a time,
    and connect these processors with their associated state stores to compose the processor topology. 
-- The globalktable ise used as satte store by th eprocessor api for filtering
+- The globalktable ise used as state store by the processor api for filtering
